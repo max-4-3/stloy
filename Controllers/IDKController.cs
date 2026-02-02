@@ -26,14 +26,14 @@ namespace back_end.Controllers
         public ActionResult<StudentResponse> AddStudent(StudentAdd student)
         {
             StudentResponse? s = _s.AddStudent(student);
-            return s != null ? Ok(student) : BadRequest("Not able to Add student!");
+            return s != null ? Ok(s) : BadRequest("Not able to Add student!");
         }
 
         [HttpPut("student/{EmpId}")]
         public ActionResult<StudentResponse> UpdateStudent(int EmpId, StudentUpdate student)
         {
             StudentResponse? s = _s.UpdateStudent(EmpId, student);
-            return s != null ? Ok(student) : BadRequest($"Not able to Update student with EmpId={EmpId}!");
+            return s != null ? Ok(s) : BadRequest($"Not able to Update student with EmpId={EmpId}!");
         }
     }
 }

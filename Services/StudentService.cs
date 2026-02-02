@@ -57,7 +57,7 @@ namespace back_end.Services
             _c.Students.Add(student1);
             _c.SaveChanges();
 
-            StudentResponse? response = Convert(student1);
+            var response = Convert(student1);
 
             Console.WriteLine($"Added Student: {response}!");
             return response;
@@ -103,7 +103,7 @@ namespace back_end.Services
                 return null;
             }
 
-            return new StudentResponse
+            return new ()
             {
                 EmpId = s.EmpId,
                 Name = s.Name,
