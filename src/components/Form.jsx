@@ -24,7 +24,7 @@ function Form({ handleSubmit }) {
         name: "",
         mobile: "",
         email: "",
-        designation: ""
+        designation: "peon"
     });
 
     const handleChange = (e) => {
@@ -32,7 +32,7 @@ function Form({ handleSubmit }) {
 
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: name === "empId" ? parseInt(value) || "" : value
         }));
     };
 
@@ -43,11 +43,23 @@ function Form({ handleSubmit }) {
 
     return (
         <form id="empForm" onSubmit={onSubmit}>
-            <InputElem required={false} name="empId" label="Employee ID" type="number" value={formData.empId} onChange={handleChange} />
-            <InputElem required={false} name="name" label="Name" value={formData.name} onChange={handleChange} />
-            <InputElem required={false} name="mobile" label="Mobile" type="tel" value={formData.mobile} onChange={handleChange} />
-            <InputElem required={false} name="email" label="Email" type="email" value={formData.email} onChange={handleChange} />
-            <InputElem name="designation" label="Designation" value={formData.designation} onChange={handleChange} />
+            <InputElem name="empId" label="Employee ID" type="number" value={formData.empId} onChange={handleChange} />
+            <InputElem name="name" label="Name" value={formData.name} onChange={handleChange} />
+            <InputElem name="mobile" label="Mobile" type="tel" value={formData.mobile} onChange={handleChange} />
+            <InputElem name="email" label="Email" type="email" value={formData.email} onChange={handleChange} />
+
+            <label htmlFor="designation">*Designation</label>
+            <select
+                value={formData.designation}
+                required={true}
+                name="designation"
+                id="designation"
+                onChange={handleChange}
+            >
+                <option value="manager">Manager</option>
+                <option value="clerk">Clerk</option>
+                <option value="peon">Peon</option>
+            </select>
             <button type="submit">Button!</button>
         </form>
     );

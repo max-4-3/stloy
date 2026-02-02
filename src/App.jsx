@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import './App.css';
 import Form from './components/Form';
-import { doSomething } from './functions/Api';
+import { postForm } from './utils/api';
+import User from './components/User';
 
 export default function App() {
     const [completed, setCompleted] = useState(false);
@@ -10,12 +11,13 @@ export default function App() {
         is: false,
         internal: "",
         todo: ""
-    })
+    });
 
     function foo(formData) {
-        doSomething(formData).then(() => {
-            setUserInfo(formData);
+        postForm(formData).then((d) => {
+            setUserInfo(d.data);
         }).catch(err => {
+            console.error(err);
             setError({
                 is: true, internal: err, todo: "Refresh"
             })
@@ -31,6 +33,13 @@ export default function App() {
             }
             {
                 !completed && <Form handleSubmit={foo} />
+            }
+            {
+                (completed && !err.is)
+                    ? (
+                        <User data={userInfo} />
+                    )
+                    : ""
             }
         </>
     )
