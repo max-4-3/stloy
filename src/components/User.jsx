@@ -1,9 +1,24 @@
 export default function User({ data }) {
     return (
         <div>
-            {
-                Object.values(data).map((v, i) => <p key={i}>{Object.keys(data)[i]}: {v}</p>)
-            }
+            <table>
+                <thead>
+                    <tr>Key</tr>
+                    <tr>Value</tr>
+                </thead>
+                <tbody>
+                    {
+                        Object.entries(data).map(
+                            ([k, v]) => (
+                                <>
+                                    <tr>{k}</tr>
+                                    <tr>{v}</tr>
+                                </>
+                            )
+                        )
+                    }
+                </tbody>
+            </table>
         </div>
     )
 }
