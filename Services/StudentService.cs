@@ -38,6 +38,7 @@ namespace back_end.Services
 
             EmpSalery salery = new()
             {
+                EmpId = student.EmpId,
                 Salery = 1_000_000,
             };
 
@@ -52,7 +53,7 @@ namespace back_end.Services
 
             Student student1 = Convert(student);
             student1.Salery = salery;
-            student1.EmpId = student.GetHashCode();
+            student1.EmpId = student.EmpId;
 
             _c.Students.Add(student1);
             _c.SaveChanges();
@@ -81,7 +82,7 @@ namespace back_end.Services
                 if (newValue == null) continue;
 
                 var targerProp = existingStudent.GetType().GetProperty(prop.Name);
-                if (targerProp != null && targerProp.CanWrite) targerProp.SetValue(existingStudent, newValue);
+                if (targerProp != null && targerProp.CanWrite && !targerProp.Name.Equals("EmpId")) targerProp.SetValue(existingStudent, newValue);
             }
 
             _c.SaveChanges();
@@ -92,7 +93,8 @@ namespace back_end.Services
 
         private bool StudentExists(StudentBase student)
         {
-            return _c.Students.FirstOrDefault(s => s.Name == student.Name && student.Mobile == s.Mobile && s.Email == student.Email) != null;
+            return _c.Students.FirstOrDefault(s => s.EmpId == student.EmpId) != null;
+            // return _c.Students.FirstOrDefault(s => s.Name == student.Name && student.Mobile == s.Mobile && s.Email == student.Email) != null;
         }
 
         private static StudentResponse? Convert(Student? s)
@@ -103,7 +105,7 @@ namespace back_end.Services
                 return null;
             }
 
-            return new ()
+            return new()
             {
                 EmpId = s.EmpId,
                 Name = s.Name,

@@ -4,13 +4,14 @@ namespace back_end.Models
 {
     public class StudentBase
     {
+        public int EmpId { get; init; }
         public string? Name { get; init; }
         public string? Email { get; init; }
         public string? Mobile { get; init; }
 
         override public string ToString()
         {
-            return $"Name = {Name}; Email = {Email}; Mobile = {Mobile}";
+            return $"EmpId = {EmpId}; Name = {Name}; Email = {Email}; Mobile = {Mobile}";
         }
     }
 
@@ -20,7 +21,7 @@ namespace back_end.Models
         public int Id { get; set; }
 
         [Required]
-        public int EmpId { get; set; }
+        new public int EmpId { get; set; }
 
         [Required]
         required public string Designation { get; set; }
@@ -35,10 +36,6 @@ namespace back_end.Models
 
     public class StudentUpdate : StudentBase
     {
-        override public string ToString()
-        {
-            return $"[Update] Name = {Name}; Email = {Email}; Mobile = {Mobile}";
-        }
     }
 
     public class StudentAdd : StudentBase
@@ -53,7 +50,6 @@ namespace back_end.Models
 
     public class StudentResponse : StudentBase
     {
-        public int EmpId { get; init; }
         required public string Designation { get; init; }
         public int Salery { get; init; }
 
