@@ -6,8 +6,14 @@ Make changes into:
     - `Database`
     - `Password`
 -  `./docker-compose.yml`:
+    - `container_name`
     - `MSSQL_SA_PASSWORD`
     - `MSSQL_PID`
+
+Add Admin User:
+```bash
+docker exec "$container_name" /opt/mssql-tools18/bin/sqlcmd -C -U "$user" -P "$MSSQL_SA_PASSWORD" -Q "use [$Database]; insert into [Users] ([Id], [Name], [Email], [HashedPassword], [Roles], [RefreshToken], [RefreshTokenExpiryTime]) Values ( newid(), $name, $email, $pass, 'Admin', null, null);"
+```
 
 # QuickStart
 
@@ -20,12 +26,12 @@ docker compose up -d    # -d -> detech
 
 ## Migrate Database
 ```bash
-dotnet el migration add Stloy
+dotnet ef migration add Stloy
 ```
 
 ## Update Database
 ```bash
-dotnet el database update
+dotnet ef database update
 ```
 
 ## Start the server
