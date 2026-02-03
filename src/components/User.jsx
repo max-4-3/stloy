@@ -3,17 +3,19 @@ export default function User({ data }) {
         <div>
             <table>
                 <thead>
-                    <tr>Key</tr>
-                    <tr>Value</tr>
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {
                         Object.entries(data).map(
                             ([k, v]) => (
-                                <>
-                                    <tr>{k}</tr>
-                                    <tr>{v}</tr>
-                                </>
+                                <tr key={k}>
+                                    <td>{k}</td>
+                                    <td>{typeof v === "object" ? JSON.stringify(v) : String(v)}</td>
+                                </tr>
                             )
                         )
                     }
