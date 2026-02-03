@@ -38,3 +38,6 @@ dotnet ef database update
 ```bash
 dotnet run
 ```
+
+# REFERENCES
+[JWT Authentication](https://youtu.be/6EEltKS8AwA?si=wgon68uHdWIDHqPi)
