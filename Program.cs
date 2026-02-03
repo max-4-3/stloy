@@ -1,6 +1,10 @@
+using System.Text;
 using back_end.Context;
 using back_end.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 namespace back_end
 {
@@ -16,10 +20,11 @@ namespace back_end
         {
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.MapOpenApi();
+                app.MapScalarApiReference();
             }
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.Run();
@@ -30,14 +35,32 @@ namespace back_end
             if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddOpenApi();
                 builder.Services.AddSwaggerGen();
+                builder.Services.AddRazorPages();
             }
+
             builder.Services.AddControllers();
-            builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddDbContext<DBContext>(o =>
             {
                 o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
                 o.EnableSensitiveDataLogging();
+            });
+            builder.Services.AddScoped<IStudentService, StudentService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "HelloWorld"))
+                };
             });
 
             return builder.Build();

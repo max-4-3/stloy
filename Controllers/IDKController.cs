@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using back_end.Models;
 using back_end.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace back_end.Controllers
 {
@@ -9,19 +10,14 @@ namespace back_end.Controllers
     public class IDKController(IStudentService _s) : ControllerBase
     {
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("students")]
         public ActionResult<IEnumerable<StudentResponse>> GetStudents()
         {
             return Ok(_s.GetStudents(0, 0));
         }
 
-        [HttpGet("student/{EmpId}")]
-        public ActionResult<StudentResponse> GetStudent(int EmpId)
-        {
-            StudentResponse? student = _s.GetStudent(EmpId);
-            return student != null ? Ok(student) : NotFound($"Not able to Found student by id {EmpId}!");
-        }
-
+        [Authorize(Roles = "Employer")]
         [HttpPost("student")]
         public ActionResult<StudentResponse> AddStudent(StudentAdd student)
         {
@@ -29,6 +25,7 @@ namespace back_end.Controllers
             return s != null ? Ok(s) : BadRequest("Not able to Add student!");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("student/{EmpId}")]
         public ActionResult<StudentResponse> UpdateStudent(int EmpId, StudentUpdate student)
         {
