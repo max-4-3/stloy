@@ -5,8 +5,9 @@ namespace back_end.Context
 {
     public class DBContext : DbContext
     {
-        public DBContext(DbContextOptions<DBContext> o) : base(o) { }
+        public DBContext(DbContextOptions<DBContext> o): base(o) {}
         public DbSet<Student> Students { get; set; }
         public DbSet<EmpSalery> EmpSaleries { get; set; }
+        public DbSet<UserDB> Users {get; set; }
     }
 }
