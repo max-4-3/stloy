@@ -22,12 +22,12 @@ namespace back_end.Controllers
         {
             var result = authService.Login(request);
             if (result is null)
-                return BadRequest("Invalid username or password.");
+                return BadRequest("Invalid username or email or password.");
 
             return Ok(result);
         }
 
-        [HttpGet("config")]
+        [HttpPost("config")]
         public ActionResult<UserConfigResponse> GetUserId(UserLogin request)
         {
             var result = authService.GetUserConfig(request);

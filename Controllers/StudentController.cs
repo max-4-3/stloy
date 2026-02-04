@@ -6,18 +6,18 @@ using Microsoft.AspNetCore.Authorization;
 namespace back_end.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "Admin")]
     [Route("api")]
     public class IDKController(IStudentService _s) : ControllerBase
     {
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("students")]
         public ActionResult<IEnumerable<StudentResponse>> GetStudents()
         {
             return Ok(_s.GetStudents(0, 0));
         }
 
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Admin,Employer")]
         [HttpPost("student")]
         public ActionResult<StudentResponse> AddStudent(StudentAdd student)
         {
@@ -25,6 +25,7 @@ namespace back_end.Controllers
             return s != null ? Ok(s) : BadRequest("Not able to Add student!");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("student/{EmpId}")]
         public ActionResult<StudentResponse> UpdateStudent(int EmpId, StudentUpdate student)
         {
