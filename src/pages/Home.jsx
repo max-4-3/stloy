@@ -1,18 +1,26 @@
-import './Home.css';
+import { useState } from 'react';
+import Login from '../components/Login';
 import Form from '../components/Form';
+import './Home.css';
+import { getAuth, setAuth as updateAuth } from '../utils/auth';
 import { useNavigate } from 'react-router';
 
 export default function Home() {
-    const navigator = useNavigate();
+    const [auth, manAuth] = useState(getAuth());
+    const redirect = useNavigate();
 
-    function foo(formData) {
-        navigator('/emp', { state: formData })
+    async function onSuccess(d) {
+        updateAuth(d);
+        manAuth(getAuth());
     }
 
     return (
         <>
-            <h1>Enter Details</h1>
-            <Form handleSubmit={foo} />
+            {
+                !auth
+                    ? <Login onSuccess={onSuccess} onError={console.error} />
+                    : <Form onSubmit={(d) => {redirect('/emp', { state: d })}} />
+            }
         </>
     )
 }

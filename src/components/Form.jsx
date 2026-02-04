@@ -1,7 +1,7 @@
 import { useState } from "react";
-import './Form.css';
+import './Login.css';
 
-function InputElem({ label, name, value, onChange, required = true, type = "text" }) {
+export function InputElem({ label, name, value, onChange, required = true, type = "text" }) {
     return (
         <>
             <label htmlFor={name}>{required && "*"} {label || "Unknown"}</label>
@@ -17,7 +17,7 @@ function InputElem({ label, name, value, onChange, required = true, type = "text
     );
 }
 
-function Form({ handleSubmit }) {
+export default function Form({ onSubmit }) {
 
     const [formData, setFormData] = useState({
         empId: "",
@@ -36,13 +36,13 @@ function Form({ handleSubmit }) {
         }));
     };
 
-    const onSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        handleSubmit(formData);
+        onSubmit(formData);
     };
 
     return (
-        <form id="empForm" onSubmit={onSubmit}>
+        <form id="empForm" onSubmit={handleSubmit}>
             <InputElem name="empId" label="Employee ID" type="number" value={formData.empId} onChange={handleChange} />
             <InputElem name="name" label="Name" value={formData.name} onChange={handleChange} />
             <InputElem name="mobile" label="Mobile" type="tel" value={formData.mobile} onChange={handleChange} />
@@ -64,5 +64,3 @@ function Form({ handleSubmit }) {
         </form>
     );
 }
-
-export default Form;

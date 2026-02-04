@@ -1,25 +1,50 @@
+import { getAuth, setAuth } from "./auth"; 
 import axios from "axios";
 
 const api = axios.create({
     baseURL: "http://localhost:5207/api",
     timeout: 10000
 })
-
 export { api };
 
-export function postForm(formData) {
-    //TODO: Parse http errors (duplication, ect)
-    return api.post('/student', formData);
-}
+api.interceptors.request.use(
+    (config) => {
+        const auth = getAuth();
+        if (auth && auth?.accessToken) {
+            config.headers.Authorization = `Bearer ${auth.accessToken}`; 
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
-export async function isAdmin(pass) {
-    try {
-        const res = await api.post('/admin', { pass: pass });
-        if (res.status != 200)
-            throw new Error(`Not gud: ${res.status}`);
-        return res.data.authKey;
-    } catch (e) {
-        console.error(e);
-        return false;
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const auth = getAuth();
+        if (!auth) return Promise.reject('Not Authenticated');
+
+        const originalRequest = error.config;
+
+        // If error is 401 and we haven't retried yet
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                // Call the refresh endpoint directly to avoid interceptor loops
+                const { data } = await api.post('/Auth/refresh', { userId: auth?.userId, refreshToken: auth?.refreshToken });
+                setAuth({...auth, data});
+
+                // Retry the original request with the new token
+                originalRequest.headers.Authorization = `Bearer ${data?.accessToken}`;
+                return api(originalRequest);
+            } catch (refreshError) {
+                // If refresh fails, clear storage and boot to login
+                localStorage.removeItem('auth');
+                console.error(refreshError);
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(error);
     }
-}
+);

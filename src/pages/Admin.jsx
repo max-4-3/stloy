@@ -1,47 +1,52 @@
-import { useState } from "react"
-import { isAdmin } from "../utils/api";
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router";
 import AdminPanel from "../components/AdminPanel";
+import Login from '../components/Login';
+import { getAuth, setAuth as updateAuth } from "../utils/auth";
+import { api } from "../utils/api";
 
 export default function Admin() {
-    const [state, setState] = useState({
-        loading: false,
-        admin: false,
-    });
-    const nav = useNavigate();
+    const [auth, manAuth] = useState(getAuth());
+    const [admin, setAdmin] = useState(false);
+    const [checking, setChecking] = useState(true);
+    const redirect = useNavigate();
 
-    const [value, setValue] = useState('');
-    const handleSubmit = async (e) => {
-        try {
-            setState({ loading: true, admin: false });
-            e.preventDefault();
-            const admin = await isAdmin(value);
-            if (admin === false) throw new Error("Not a adming");
-            setValue(admin);
-            setState({ loading: false, admin: true });
-        } catch (e) {
-            console.error(e);
-            nav('/');
-        }
+    async function onSuccess(d) {
+        updateAuth(d);
+        manAuth(getAuth());
     }
 
+    useEffect(() => {
+        async function adminCheck() {
+            if (!auth) {
+                setChecking(false);
+                return;
+            }
+
+            try {
+                const { status } = await api.get('/students');
+                if (status === 200) {
+                    setAdmin(true);
+                } else {
+                    updateAuth(undefined);
+                    redirect('/');
+                }
+            } catch (err) {
+                console.error("Admin verification failed", err);
+                updateAuth(undefined);
+                redirect('/');
+            } finally {
+                setChecking(false);
+            }
+        }
+
+        adminCheck();
+    }, [auth, redirect]);
+
+    if (checking) return <div>Verifying Admin Status...</div>;
     return (
         <>
-            <h1>Admin Dashboard</h1>
-            {
-                state.loading
-                    ? "Checking..."
-                    : (
-                        state.admin == true
-                            ? <AdminPanel key={value} />
-                            : (
-                                <form onSubmit={handleSubmit}>
-                                    <input type="text" value={value} onChange={e => setValue(e.target.value)} />
-                                    <button>Submit!</button>
-                                </form>
-                            )
-                    )
-            }
+            {admin ? <AdminPanel /> : <Login onSuccess={onSuccess} onError={() => updateAuth(undefined) || redirect('/')} />}
         </>
     )
 }
