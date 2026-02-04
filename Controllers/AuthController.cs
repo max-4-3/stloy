@@ -1,6 +1,5 @@
 using back_end.Services;
 using back_end.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace back_end.Controllers
@@ -14,7 +13,7 @@ namespace back_end.Controllers
         {
             var user = authService.Register(request);
             if (user is null)
-                return BadRequest("Username already exists.");
+                return BadRequest("Already exists.");
             return Ok(user);
         }
 
@@ -28,6 +27,14 @@ namespace back_end.Controllers
             return Ok(result);
         }
 
+        [HttpGet("config")]
+        public ActionResult<UserConfigResponse> GetUserId(UserLogin request)
+        {
+            var result = authService.GetUserConfig(request);
+            if (result is null) return Unauthorized("Relogin");
+            return Ok(result);
+        }
+
         [HttpPost("refresh")]
         public ActionResult<TokenResponse> RefreshToken(RefreshTokenRequest request)
         {
@@ -36,13 +43,6 @@ namespace back_end.Controllers
                 return Unauthorized("Invalid refresh token.");
 
             return Ok(result);
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpGet("admin-only")]
-        public IActionResult AdminOnlyEndpoint()
-        {
-            return Ok("You are and admin!");
         }
     }
 }

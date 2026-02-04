@@ -11,6 +11,15 @@ namespace back_end.Services
 {
     public class AuthService(DBContext context, IConfiguration configuration) : IAuthService
     {
+        public UserConfigResponse? GetUserConfig(UserLogin login) {
+            UserDB? user = context.Users.FirstOrDefault(u => u.Email == login.Email && u.Name == login.Name);
+            if (user is null) return null;
+            return new() {
+                UserId = user.Id,
+                RefreshTokenValidUntil = user.RefreshTokenExpiryTime ?? DateTime.UtcNow,
+            };
+        }
+
         public TokenResponse? Login(UserLogin login)
         {
             var user = context.Users.FirstOrDefault(u => u.Email == login.Email);
@@ -51,7 +60,6 @@ namespace back_end.Services
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
             };
         }
 
@@ -69,7 +77,9 @@ namespace back_end.Services
             return new()
             {
                 AccessToken = CreateToken(user),
-                RefreshToken = GenerateAndSaveRefreshToken(user)
+                RefreshToken = GenerateAndSaveRefreshToken(user),
+                AccessTokenValidUntil = DateTime.UtcNow.AddMinutes(5),
+                RefreshTokenValidUntil = DateTime.UtcNow.AddDays(2),
             };
         }
 
@@ -97,7 +107,7 @@ namespace back_end.Services
         {
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(2);
             context.SaveChanges();
             return refreshToken;
         }
@@ -121,7 +131,7 @@ namespace back_end.Services
                 issuer: configuration.GetValue<string>("Jwt:Issuer"),
                 audience: configuration.GetValue<string>("Jwt:Audience"),
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(1),
+                expires: DateTime.UtcNow.AddMinutes(5),
                 signingCredentials: creds
             );
 

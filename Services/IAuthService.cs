@@ -7,5 +7,6 @@ namespace back_end.Services
         UserResponse? Register(UserLogin login);
         TokenResponse? Login(UserLogin login);
         TokenResponse? RefreshToken(RefreshTokenRequest login);
+        UserConfigResponse? GetUserConfig(UserLogin login);
     }
 }

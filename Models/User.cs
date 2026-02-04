@@ -14,13 +14,11 @@ namespace back_end.Models
     {
         public Guid Id { get; set; }
         public required string Email { get; set; }
-
         public string? RefreshToken { get; set; }
-        public DateTime? RefreshTokenExpiryTime { get; set; }
 
         override public string ToString()
         {
-            return $"[DB] Name = {Name}; Email = {Email}; RefreshToken = {RefreshToken}; RefreshTokenExpiryTime = {RefreshTokenExpiryTime}";
+            return $"[DB] Name = {Name}; Email = {Email}; RefreshToken = {RefreshToken}";
         }
     }
 
