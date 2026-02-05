@@ -1,16 +1,33 @@
-# React + Vite
+# Stloy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## QuickStart
 
-Currently, two official plugins are available:
+### Config
+Edit `./src/utils/api.js` and set `BACKEND_API` to your backend endpoint:
+```javascript ./src/utils/api.js
+const BACKEND_API = "<YOUR_BACKEND_URL>";   // for example: http://localhost:4207/api
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Run
+Run the `dev` script with `npm`:
+```bash
+npm run dev
+```
 
-## React Compiler
+## Endpoints
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Auth
+- [POST]    `/login`        -> Used for getting `accessToken` and `refreshToken`; with `name`, `email` and `password`
+- [POST]    `/refresh`      -> Used for getting new `accessToken` and `refreshToken`; with `userId` and `refreshToken`
+- [GET]     `/config`       -> Used for getting `userId`; with `name`, `email` and `password` (alongside `/login`)
 
-## Expanding the ESLint configuration
+### Student
+- [POST]    `/student`      -> Used for creating a student; with `empId`, `name`, `email`, `phone` and `designation`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+#### ADMIN
+- [GET]     `/students`     -> Used for getting a list of `student`; with nothing
+- [PUT]     `/student/{id}` -> Used for updaing a `student` of id `userId`; with `name`, `email`, `phone` and `designation`
+- [DELETE]  `/student/{id}` -> Used for removing a `student` of id `userId`; with nothing
+
+# REFERENCES
+[CSS](https://gemini.google.com)
