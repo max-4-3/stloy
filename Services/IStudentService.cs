@@ -8,5 +8,6 @@ namespace back_end.Services
         public StudentResponse? GetStudent(int EmpID);
         public StudentResponse? AddStudent(StudentAdd student);
         public StudentResponse? UpdateStudent(int EmpId, StudentUpdate student);
+        public StudentResponse? DeleteStudent(int EmpId);
     }
 }

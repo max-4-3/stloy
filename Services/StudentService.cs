@@ -91,6 +91,25 @@ namespace back_end.Services
             return response;
         }
 
+        public StudentResponse? DeleteStudent(int EmpId)
+        {
+            var user = _c.Students.FirstOrDefault(s => s.EmpId == EmpId);
+            if (user != null)
+            {
+                var response = Convert(user);
+
+                _c.Students.Remove(user);
+                _c.SaveChanges();
+
+                Console.WriteLine($"Deleted User: {response}");
+                return response;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private bool StudentExists(StudentBase student)
         {
             return _c.Students.FirstOrDefault(s => s.EmpId == student.EmpId) != null;

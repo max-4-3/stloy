@@ -32,5 +32,13 @@ namespace back_end.Controllers
             StudentResponse? s = _s.UpdateStudent(EmpId, student);
             return s != null ? Ok(s) : BadRequest($"Not able to Update student with EmpId={EmpId}!");
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("student/{EmpId}")]
+        public ActionResult<StudentResponse> DeleteStudent(int EmpId)
+        {
+            StudentResponse? s = _s.DeleteStudent(EmpId);
+            return s != null ? Ok(s) : BadRequest($"Not able to Update student with EmpId={EmpId}!");
+        }
     }
 }
