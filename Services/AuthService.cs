@@ -11,15 +11,16 @@ namespace back_end.Services
 {
     public class AuthService(DBContext context, IConfiguration configuration) : IAuthService
     {
-        public UserConfigResponse? GetUserConfig(UserLogin login) {
-            UserDB? user = context.Users.FirstOrDefault(u => u.Email == login.Email && u.Name == login.Name);
-            if (user is null) return null;
-            return new() {
-                UserId = user.Id,
-                RefreshTokenValidUntil = user.RefreshTokenExpiryTime ?? DateTime.UtcNow,
-            };
+        // static configs
+        static private DateTime GetAccesTime() {
+            return DateTime.UtcNow.AddHours(2);
         }
 
+        static private DateTime GetRefreshTime() {
+            return DateTime.UtcNow.AddDays(7);
+        }
+
+        // Interface implementations
         public TokenResponse? Login(UserLogin login)
         {
             var user = context.Users.FirstOrDefault(u => u.Email == login.Email);
@@ -28,7 +29,8 @@ namespace back_end.Services
                 return null;
             }
             // Skip password hash checking for Admin since Admin is inserted via raw sql query
-            if (!user.Roles.Equals("Admin") && new PasswordHasher<UserDB>().VerifyHashedPassword(user, user.HashedPassword, login.Password)
+            // No longer as Admin is added to db via cli tool that hash the password
+            if (new PasswordHasher<UserDB>().VerifyHashedPassword(user, user.HashedPassword, login.Password)
                 == PasswordVerificationResult.Failed)
             {
                 return null;
@@ -72,44 +74,23 @@ namespace back_end.Services
             return CreateTokenResponse(user);
         }
 
+        public UserConfigResponse? GetUserConfig(UserLogin login) {
+            UserDB? user = context.Users.FirstOrDefault(u => u.Email == login.Email && u.Name == login.Name);
+            if (user is null) return null;
+            return new() {
+                UserId = user.Id,
+                RefreshTokenValidUntil = user.RefreshTokenExpiryTime ?? DateTime.UtcNow,
+            };
+        }
+
+        // Helper methods
         private TokenResponse CreateTokenResponse(UserDB user)
         {
             return new()
             {
                 AccessToken = CreateToken(user),
                 RefreshToken = GenerateAndSaveRefreshToken(user),
-                AccessTokenValidUntil = DateTime.UtcNow.AddMinutes(5),
-                RefreshTokenValidUntil = DateTime.UtcNow.AddDays(2),
             };
-        }
-
-        private UserDB? ValidateRefreshToken(Guid userId, string refreshToken)
-        {
-            var user = context.Users.Find(userId);
-            if (user is null || user.RefreshToken != refreshToken
-                || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            {
-                return null;
-            }
-
-            return user;
-        }
-
-        private static string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        private string GenerateAndSaveRefreshToken(UserDB user)
-        {
-            var refreshToken = GenerateRefreshToken();
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(2);
-            context.SaveChanges();
-            return refreshToken;
         }
 
         private string CreateToken(UserDB user)
@@ -131,11 +112,41 @@ namespace back_end.Services
                 issuer: configuration.GetValue<string>("Jwt:Issuer"),
                 audience: configuration.GetValue<string>("Jwt:Audience"),
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(5),
+                expires: GetAccesTime(),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
+
+        private string GenerateAndSaveRefreshToken(UserDB user)
+        {
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = GetRefreshTime();
+            context.SaveChanges();
+            return refreshToken;
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        private UserDB? ValidateRefreshToken(Guid userId, string refreshToken)
+        {
+            var user = context.Users.Find(userId);
+            if (user is null || user.RefreshToken != refreshToken
+                || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return null;
+            }
+
+            return user;
+        }
+
     }
 }
