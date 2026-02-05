@@ -14,6 +14,11 @@ Add Admin User:
 ```bash
 docker exec "$container_name" /opt/mssql-tools18/bin/sqlcmd -C -U "$user" -P "$MSSQL_SA_PASSWORD" -Q "use [$Database]; insert into [Users] ([Id], [Name], [Email], [HashedPassword], [Roles], [RefreshToken], [RefreshTokenExpiryTime]) Values ( newid(), $name, $email, $pass, 'Admin', null, null);"
 ```
+or rename `./CreateAdmin.cs.bs` to `./CreateAdmin.cs` and run:
+```bash
+dotnet run
+```
+after that make sure to rename `./CreateAdmin.cs` to `./CreateAdmin.cs.bs`
 
 # QuickStart
 
