@@ -41,7 +41,7 @@ export default function Form({ onSubmit, initialData }) {
 
     return (
         <form id="empForm" onSubmit={handleSubmit}>
-            <InputElem name="empId" label="Employee ID" type="number" value={formData.empId} onChange={handleChange} />
+            <InputElem name="empId" label="Employee ID" type="text" value={formData.empId} onChange={handleChange} />
             <InputElem name="name" label="Name" value={formData.name} onChange={handleChange} />
             <InputElem name="mobile" label="Mobile" type="tel" value={formData.mobile} onChange={handleChange} />
             <InputElem name="email" label="Email" type="email" value={formData.email} onChange={handleChange} />

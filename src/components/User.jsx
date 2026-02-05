@@ -1,4 +1,4 @@
-export default function User({ data, onEdit }) {
+export default function User({ data, onEdit, onDelete }) {
     return (
         <div className="user">
             <p>{data.empId}</p>
@@ -7,12 +7,19 @@ export default function User({ data, onEdit }) {
             <p>{data.email}</p>
             <p>{data.salery}</p>
             <p>{data.designation}</p>
-            {/* Add the edit button only if onEdit is provided (Admin mode) */}
-            {onEdit && (
-                <button className="edit-btn" onClick={() => onEdit(data)}>
-                    ✎
-                </button>
-            )}
+            
+            <div className="actions">
+                {onEdit && (
+                    <button className="icon-btn edit-btn" onClick={() => onEdit(data)}>
+                        ✎
+                    </button>
+                )}
+                {onDelete && (
+                    <button className="icon-btn delete-btn" onClick={() => onDelete(data.empId)}>
+                        🗑
+                    </button>
+                )}
+            </div>
         </div>
     )
 }

@@ -18,5 +18,10 @@ export default function Protected() {
         checkAdmin();
     }, [AccessToken]);
 
-    return isAdmin ? <Outlet /> : <LoginForm onSuccess={() => console.log("Admin Auth completed!")} />
+    return isAdmin ? <Outlet /> : (
+        <>
+            <h1>Admin Login</h1>
+            <LoginForm onSuccess={() => console.log("Admin Auth completed!")} />
+        </>
+    )
 }
