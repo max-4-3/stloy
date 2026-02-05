@@ -13,7 +13,7 @@ namespace back_end.Services
         // static configs
         static private DateTime GetAccesTime()
         {
-            return DateTime.UtcNow.AddHours(2);
+            return DateTime.UtcNow.AddMinutes(30);
         }
 
         static private DateTime GetRefreshTime()
