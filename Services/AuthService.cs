@@ -5,32 +5,33 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace back_end.Services
 {
-    public class AuthService(DBContext context, IConfiguration configuration) : IAuthService
+    public class AuthService(DBContext c, IConfiguration _c, PasswordHasher<UserDB> ph, SigningCredentials sc, JwtSecurityTokenHandler jh) : IAuthService
     {
         // static configs
-        static private DateTime GetAccesTime() {
+        static private DateTime GetAccesTime()
+        {
             return DateTime.UtcNow.AddHours(2);
         }
 
-        static private DateTime GetRefreshTime() {
+        static private DateTime GetRefreshTime()
+        {
             return DateTime.UtcNow.AddDays(7);
         }
 
         // Interface implementations
         public TokenResponse? Login(UserLogin login)
         {
-            var user = context.Users.FirstOrDefault(u => u.Email == login.Email);
+            var user = c.Users.FirstOrDefault(u => u.Email == login.Email);
             if (user is null)
             {
                 return null;
             }
             // Skip password hash checking for Admin since Admin is inserted via raw sql query
             // No longer as Admin is added to db via cli tool that hash the password
-            if (new PasswordHasher<UserDB>().VerifyHashedPassword(user, user.HashedPassword, login.Password)
+            if (ph.VerifyHashedPassword(user, user.HashedPassword, login.Password)
                 == PasswordVerificationResult.Failed)
             {
                 return null;
@@ -41,7 +42,7 @@ namespace back_end.Services
 
         public UserResponse? Register(UserLogin login)
         {
-            if (context.Users.Any(u => u.Email == login.Email))
+            if (c.Users.Any(u => u.Email == login.Email))
             {
                 return null;
             }
@@ -53,9 +54,9 @@ namespace back_end.Services
                 Roles = "Employer",
             };
 
-            user.HashedPassword = new PasswordHasher<UserDB>().HashPassword(user, login.Password);
-            context.Users.Add(user);
-            context.SaveChanges();
+            user.HashedPassword = ph.HashPassword(user, login.Password);
+            c.Users.Add(user);
+            c.SaveChanges();
 
             return new()
             {
@@ -74,10 +75,12 @@ namespace back_end.Services
             return CreateTokenResponse(user);
         }
 
-        public UserConfigResponse? GetUserConfig(UserLogin login) {
-            UserDB? user = context.Users.FirstOrDefault(u => u.Email == login.Email && u.Name == login.Name);
+        public UserConfigResponse? GetUserConfig(UserLogin login)
+        {
+            UserDB? user = c.Users.FirstOrDefault(u => u.Email == login.Email && u.Name == login.Name);
             if (user is null) return null;
-            return new() {
+            return new()
+            {
                 UserId = user.Id,
                 RefreshTokenValidUntil = user.RefreshTokenExpiryTime ?? DateTime.UtcNow,
             };
@@ -103,20 +106,15 @@ namespace back_end.Services
                 new Claim(ClaimTypes.Email, user.Email),
             ];
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(configuration.GetValue<string>("Jwt:Key")!));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: configuration.GetValue<string>("Jwt:Issuer"),
-                audience: configuration.GetValue<string>("Jwt:Audience"),
+                issuer: _c.GetValue<string>("Jwt:Issuer"),
+                audience: _c.GetValue<string>("Jwt:Audience"),
                 claims: claims,
                 expires: GetAccesTime(),
-                signingCredentials: creds
+                signingCredentials: sc
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+            return jh.WriteToken(tokenDescriptor);
         }
 
         private string GenerateAndSaveRefreshToken(UserDB user)
@@ -124,7 +122,7 @@ namespace back_end.Services
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = GetRefreshTime();
-            context.SaveChanges();
+            c.SaveChanges();
             return refreshToken;
         }
 
@@ -138,7 +136,7 @@ namespace back_end.Services
 
         private UserDB? ValidateRefreshToken(Guid userId, string refreshToken)
         {
-            var user = context.Users.Find(userId);
+            var user = c.Users.Find(userId);
             if (user is null || user.RefreshToken != refreshToken
                 || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {

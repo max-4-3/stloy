@@ -1,7 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using back_end.Context;
+using back_end.Models;
 using back_end.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -46,8 +49,26 @@ namespace back_end
                 o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
                 o.EnableSensitiveDataLogging();
             });
+
+            builder.Services.AddScoped<IPasswordHasher<UserDB>, PasswordHasher<UserDB>>();  
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+
+            builder.Services.AddSingleton(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                return new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
+            });
+
+            builder.Services.AddSingleton(sp =>
+            {
+                var key = sp.GetRequiredService<SymmetricSecurityKey>();
+                return new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+            });
+
+            builder.Services.AddSingleton<JwtSecurityTokenHandler>();
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
