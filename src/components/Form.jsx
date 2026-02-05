@@ -1,10 +1,9 @@
 import { useState } from "react";
-import './Login.css';
 
 export function InputElem({ label, name, value, onChange, required = true, type = "text" }) {
     return (
-        <>
-            <label htmlFor={name}>{required && "*"} {label || "Unknown"}</label>
+        <div className="iw">
+            <label htmlFor={name}>{label || "Unknown"}</label>
             <input
                 id={name}
                 name={name}
@@ -13,7 +12,7 @@ export function InputElem({ label, name, value, onChange, required = true, type 
                 onChange={onChange}
                 required={required}
             />
-        </>
+        </div>
     );
 }
 
@@ -48,18 +47,20 @@ export default function Form({ onSubmit }) {
             <InputElem name="mobile" label="Mobile" type="tel" value={formData.mobile} onChange={handleChange} />
             <InputElem name="email" label="Email" type="email" value={formData.email} onChange={handleChange} />
 
-            <label htmlFor="designation">*Designation</label>
-            <select
-                value={formData.designation}
-                required={true}
-                name="designation"
-                id="designation"
-                onChange={handleChange}
-            >
-                <option value="manager">Manager</option>
-                <option value="clerk">Clerk</option>
-                <option value="peon">Peon</option>
-            </select>
+            <div className="iw">
+                <label htmlFor="designation">Designation</label>
+                <select
+                    value={formData.designation}
+                    required={true}
+                    name="designation"
+                    id="designation"
+                    onChange={handleChange}
+                >
+                    <option value="manager">Manager</option>
+                    <option value="clerk">Clerk</option>
+                    <option value="peon">Peon</option>
+                </select>
+            </div>
             <button type="submit">Button!</button>
         </form>
     );

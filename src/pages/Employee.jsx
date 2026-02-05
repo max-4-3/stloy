@@ -1,51 +1,23 @@
-import { useNavigate, useLocation } from "react-router"
-import { api } from '../utils/api';
-import { useEffect, useState } from "react";
+import { useLocation } from "react-router"
 import User from '../components/User';
-import { getAuth } from "../utils/auth";
+import './Employee.css'
 
 export default function Employee() {
-    const redirect = useNavigate();
-    const auth = getAuth();
-    useEffect(() => {
-        if (!auth) redirect('/');
-    })
-
-    const { state: formData } = useLocation();
-    const [empInfo, setImpInfo] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState({
-        is: false,
-        todo: '',
-    });
-
-    useEffect(() => {
-        console.log(formData);
-        api.post('/student', formData).then(({ data, status, statusText }) => {
-            if (status === 200) {
-                setImpInfo(data);
-            } else {
-                throw new Error(`onse isn't Ok: ${statusText} [${status}]`)
-            }
-        }).catch((err) => {
-            setError({
-                is: true,
-                todo: `Error: ${err}`
-            })
-        }).finally(() => setLoading(false))
-    }, [formData]);
-
+    const { state: empInfo } = useLocation();
     return (
         <>
             <h1>Employee</h1>
-            {loading
-                ? "Loading..."
-                : (
-                    error.is
-                        ? (<p>Something bad happened:<br />{error.todo}</p>)
-                        : (<User data={empInfo} />)
-                )
-            }
+            <div className="wrap">
+                <div className="row">
+                    <p>EMPID</p>
+                    <p>NAME</p>
+                    <p>MOBILE</p>
+                    <p>EMAIL</p>
+                    <p>SALERY</p>
+                    <p>DESIGNATION</p>
+                </div>
+                <User data={empInfo} />
+            </div>
         </>
     )
 }

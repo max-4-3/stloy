@@ -1,3 +1,9 @@
+*, *::after, *::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 :root {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -21,14 +27,6 @@ a {
 
 a:hover {
     color: #535bf2;
-}
-
-body {
-    margin: 0;
-    display: flex;
-    place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
 }
 
 h1 {
@@ -57,15 +55,56 @@ button:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* @media (prefers-color-scheme: light) { */
-/*   :root { */
-/*     color: #213547; */
-/*     background-color: #ffffff; */
-/*   } */
-/*   a:hover { */
-/*     color: #747bff; */
-/*   } */
-/*   button { */
-/*     background-color: #f9f9f9; */
-/*   } */
-/* } */
+#root {
+    display: flex;
+    flex-direction: column;
+    width: 100dvh;
+    height: 100dvh;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+form {
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .6rem;
+}
+
+form .iw {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+form .iw input,
+form .iw select {
+    height: 2rem;
+    padding: 0 .6rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid darkgray;
+    outline: none;
+}
+
+form .iw input:focus,
+form .iw select:focus {
+    border-bottom-color: blue;
+    outline: none;
+}
+
+form .iw label {
+    text-transform: capitalize;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+form .iw label::before {
+    content: '> ';
+    vertical-align: center;
+    text-align: center;
+}

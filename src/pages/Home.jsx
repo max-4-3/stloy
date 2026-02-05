@@ -1,26 +1,40 @@
-import { useState } from 'react';
-import Login from '../components/Login';
+import { useEffect, useState } from 'react';
 import Form from '../components/Form';
 import './Home.css';
-import { getAuth, setAuth as updateAuth } from '../utils/auth';
 import { useNavigate } from 'react-router';
+import { api } from '../utils/api';
 
+// ATP: Logged in (either admin or normie)
 export default function Home() {
-    const [auth, manAuth] = useState(getAuth());
     const redirect = useNavigate();
+    const [form, setForm] = useState();
+    const [emp, setEmp] = useState();
+    const [not, setNot] = useState('');
 
-    async function onSuccess(d) {
-        updateAuth(d);
-        manAuth(getAuth());
-    }
+    useEffect(() => {
+        if (form == null) return;
+        api.post('/student', form).then(({ status, data }) => {
+            if (status === 200) {
+                setEmp(data);
+            } else if (status == 400) {
+                setNot('UserId is Already taken');
+            } else {
+                throw new Error("Unable to add");
+            }
+        }).catch((err) => {
+            if (err) {
+                console.log('Err:', err);
+                setNot('Unable to add employee')
+            }
+        });
+    }, [form, emp]);
 
     return (
         <>
-            {
-                !auth
-                    ? <Login onSuccess={onSuccess} onError={console.error} />
-                    : <Form onSubmit={(d) => {redirect('/emp', { state: d })}} />
-            }
+            <p className='title'>Add Employee</p>
+            <Form onSubmit={setForm} />
+            {emp != null && redirect('/emp', { state: emp })}
+            { typeof not === 'string' && not }
         </>
     )
 }

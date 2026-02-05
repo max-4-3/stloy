@@ -1,0 +1,9 @@
+.user {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    justify-items: end;
+    align-items: center;
+    gap: .6rem;
+    grid-template-rows: 1fr;
+    width: 100%;
+}
