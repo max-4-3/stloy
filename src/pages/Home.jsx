@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Form from '../components/Form';
-import './Home.css';
 import { useNavigate } from 'react-router';
 import { api } from '../utils/api';
 

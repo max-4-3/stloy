@@ -1,5 +1,4 @@
-import './User.css';
-export default function User({ data }) {
+export default function User({ data, onEdit }) {
     return (
         <div className="user">
             <p>{data.empId}</p>
@@ -8,6 +7,12 @@ export default function User({ data }) {
             <p>{data.email}</p>
             <p>{data.salery}</p>
             <p>{data.designation}</p>
+            {/* Add the edit button only if onEdit is provided (Admin mode) */}
+            {onEdit && (
+                <button className="edit-btn" onClick={() => onEdit(data)}>
+                    ✎
+                </button>
+            )}
         </div>
     )
 }

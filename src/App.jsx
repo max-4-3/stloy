@@ -8,6 +8,9 @@ import Layout from "./pages/Layout";
 import Protected from "./pages/Protected";
 import AdminProtected from "./pages/AdminProtected";
 import AuthProvider from "./auth/AuthProvider";
+import './index.css';
+import './form.css';
+import './admin.css'
 
 export default function App() {
     return (

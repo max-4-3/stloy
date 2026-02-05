@@ -1,6 +1,5 @@
 import { useLocation } from "react-router"
 import User from '../components/User';
-import './Employee.css'
 
 export default function Employee() {
     const { state: empInfo } = useLocation();

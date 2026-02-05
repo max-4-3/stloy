@@ -6,7 +6,9 @@ export default function Layout() {
     return (
         <>
             <button onClick={() => nav(-1)}>Go Back</button>
-            <Outlet />
+            <div className="outlet">
+                <Outlet />
+            </div>
         </>
     )
 }

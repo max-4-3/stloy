@@ -16,9 +16,9 @@ export function InputElem({ label, name, value, onChange, required = true, type 
     );
 }
 
-export default function Form({ onSubmit }) {
-
-    const [formData, setFormData] = useState({
+export default function Form({ onSubmit, initialData }) {
+    // Initialize state with initialData if it exists, otherwise use defaults
+    const [formData, setFormData] = useState(initialData || {
         empId: "",
         name: "",
         mobile: "",
@@ -28,7 +28,6 @@ export default function Form({ onSubmit }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormData(prev => ({
             ...prev,
             [name]: name === "empId" ? parseInt(value) || "" : value
@@ -49,19 +48,13 @@ export default function Form({ onSubmit }) {
 
             <div className="iw">
                 <label htmlFor="designation">Designation</label>
-                <select
-                    value={formData.designation}
-                    required={true}
-                    name="designation"
-                    id="designation"
-                    onChange={handleChange}
-                >
+                <select value={formData.designation} name="designation" id="designation" onChange={handleChange}>
                     <option value="manager">Manager</option>
                     <option value="clerk">Clerk</option>
                     <option value="peon">Peon</option>
                 </select>
             </div>
-            <button type="submit">Button!</button>
+            <button type="submit">{initialData ? "Update" : "Add"} Employee</button>
         </form>
     );
 }

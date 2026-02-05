@@ -1,110 +1,43 @@
-*, *::after, *::before {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  /* Layout Constants */
+  --border-width: 3px;
+  --sharp-shadow: 6px 6px 0px 0px #000;
+  
+  /* Light Theme */
+  --bg: #ffffff;
+  --text: #000000;
+  --accent: #2ecc71; /* Green */
+  --secondary: #3498db; /* Blue */
+  --border-color: #000000;
+  --input-bg: #fff;
 }
 
-a {
-    font-weight: 500;
-    color: #646cff;
-    text-decoration: inherit;
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* High-Contrast "Boxy" Dark Theme */
+    --bg: #1a1a1a;
+    --text: #ffffff;
+    --accent: #f1c40f; /* Yellow */
+    --secondary: #9b59b6; /* Purple */
+    --border-color: #ffffff;
+    --input-bg: #2d2d2d;
+    --sharp-shadow: 6px 6px 0px 0px var(--accent);
+  }
 }
 
-a:hover {
-    color: #535bf2;
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Courier New', Courier, monospace; /* Monospace fits the boxy vibe */
+  margin: 0;
+  padding: 20px;
 }
 
-h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
-}
-
-button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
-
-button:hover {
-    border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-}
-
-#root {
-    display: flex;
-    flex-direction: column;
-    width: 100dvh;
-    height: 100dvh;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-form {
-    max-width: 500px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: .6rem;
-}
-
-form .iw {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-form .iw input,
-form .iw select {
-    height: 2rem;
-    padding: 0 .6rem;
-    background: none;
-    border: none;
-    border-bottom: 2px solid darkgray;
-    outline: none;
-}
-
-form .iw input:focus,
-form .iw select:focus {
-    border-bottom-color: blue;
-    outline: none;
-}
-
-form .iw label {
-    text-transform: capitalize;
-    font-size: 1rem;
-    font-weight: 400;
-}
-
-form .iw label::before {
-    content: '> ';
-    vertical-align: center;
-    text-align: center;
+h1, .title {
+  text-transform: uppercase;
+  font-weight: 900;
+  border-bottom: var(--border-width) solid var(--border-color);
+  display: inline-block;
+  margin-bottom: 2rem;
+  padding-bottom: 5px;
 }
