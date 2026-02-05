@@ -50,7 +50,7 @@ namespace back_end
                 o.EnableSensitiveDataLogging();
             });
 
-            builder.Services.AddScoped<IPasswordHasher<UserDB>, PasswordHasher<UserDB>>();  
+            builder.Services.AddScoped<PasswordHasher<UserDB>>();  
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
